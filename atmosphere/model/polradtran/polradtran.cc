@@ -142,7 +142,7 @@ void PolRadtran::MaybeComputeSkyDome(Angle sun_zenith) const {
 
     const std::string cmd =
         libradtran_uvspec_ + " -i output/libradtran/input.txt";
-    FILE* pipe = popen(cmd.c_str(), "r");
+    FILE* pipe = _popen(cmd.c_str(), "r");
     if (!pipe) {
       return;
     }
@@ -153,7 +153,7 @@ void PolRadtran::MaybeComputeSkyDome(Angle sun_zenith) const {
         output += buffer;
       }
     }
-    pclose(pipe);
+    _pclose(pipe);
 
     std::stringstream string_stream(output);
     for (unsigned int j = 0; j < spectrum.size(); ++j) {

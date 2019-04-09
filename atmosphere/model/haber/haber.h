@@ -37,6 +37,7 @@
 #include "math/binary_function.h"
 #include "math/vector.h"
 #include "physics/units.h"
+#include "atmosphere/ct_math.h"
 
 class Haber : public Atmosphere {
  public:
@@ -67,10 +68,10 @@ class Haber : public Atmosphere {
   static constexpr Number kShellRatio =
       (1.0 + PI / kNumPhi) / (1.0 - PI / kNumPhi);
   static constexpr int kNumShell =
-      ceil((log(kMaxShellRadius / kMinShellRadius) / log(kShellRatio))());
+      ct_math::ceil((log(kMaxShellRadius / kMinShellRadius) / log(kShellRatio))());
 
   static constexpr int kNumTheta =
-     ceil(((pi / 2.0 + 2.0 * asin(kMaxShellRadius / (2.0 * EarthRadius))) /
+     ct_math::ceil(((pi / 2.0 + 2.0 * asin(kMaxShellRadius / (2.0 * EarthRadius))) /
          kDeltaPhi)());
 
   typedef dimensional::Vector3<Length> Position;

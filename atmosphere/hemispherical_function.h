@@ -184,8 +184,8 @@ class HemisphericalFunction {
   // directions from the 8 samples around the zenith, and returns a linear
   // combination of those depending on the azimuth angle.
   T GetZenithDerivative(Angle view_azimuth) const {
-    constexpr double norm = 1.0 / sqrt(2.0);
-    constexpr double scale = 0.5 / (1.0 + 2.0 * norm);
+    double norm = 1.0 / sqrt(2.0);
+    double scale = 0.5 / (1.0 + 2.0 * norm);
     T derivative_x = ((value_[5][4] - value_[3][4]) +
         (value_[5][5] - value_[3][3]) * norm +
         (value_[5][3] - value_[3][5]) * norm) * scale;
