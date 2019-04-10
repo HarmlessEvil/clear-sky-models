@@ -1,0 +1,7 @@
+if not exist "output/cache/bruneton" mkdir "output/cache/bruneton"
+if not exist "output/cache/haber" mkdir "output/cache/haber"
+if not exist "output/cache/input" mkdir "output/cache/input"
+if not exist "output/cache/nishita" mkdir "output/cache/nishita"
+if not exist "output/cache/polradtran" mkdir "output/cache/polradtran"
+if not exist "output/figures" mkdir "output/figures"
+if not exist "output/libradtran" mkdir "output/libradtran"
