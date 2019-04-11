@@ -4,3 +4,4 @@ output/**
 paper/figures/**
 main.plot
 paper.plot
+external/libRadtran-2.0.1/data/**
