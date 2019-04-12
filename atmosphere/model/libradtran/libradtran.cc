@@ -39,6 +39,8 @@
 
 namespace {
 
+char* lf_endl = "\n";
+
 constexpr int kNumLayers = 100;
 
 double AltitudeKm(int k) {
@@ -149,34 +151,34 @@ LibRadtran::LibRadtran(const std::string& libradtran_uvspec,
     : libradtran_uvspec_(libradtran_uvspec), cache_type_(cache_type) {
   // Source: solar spectrum.
   IrradianceSpectrum solar = SolarSpectrum();
-  std::ofstream source("output/libradtran/solar_spectrum.txt");
+  std::ofstream source("output/libradtran/solar_spectrum.txt", std::ios_base::out | std::ios_base::binary);
   for (unsigned int i = 0; i < solar.size(); ++i) {
     source << solar.GetSample(i).to(nm) << " "
-        << solar[i].to(watt_per_square_meter_per_nm) << std::endl;
+        << solar[i].to(watt_per_square_meter_per_nm) << lf_endl;
   }
   source.close();
 
   // Atmosphere profile (altitude, pressure, temperature, density).
-  std::ofstream atmosphere("output/libradtran/atmosphere.txt");
+  std::ofstream atmosphere("output/libradtran/atmosphere.txt", std::ios_base::out | std::ios_base::binary);
   for (int i = 0; i < kNumLayers + 1; ++i) {
     double x = exp(-AltitudeKm(i) * km / RayleighScaleHeight)();
     atmosphere << AltitudeKm(i) << " "  << 1013.0 * x << " 288 "
-        << 2.545818e19 * x << std::endl;
+        << 2.545818e19 * x << lf_endl;
   }
   atmosphere.close();
 
   // Rayleigh: scattering and absorption dtau per layer.
   ScatteringSpectrum rayleigh = RayleighScattering();
   std::ofstream molecular_scattering(
-      "output/libradtran/molecular_scattering.txt");
+      "output/libradtran/molecular_scattering.txt", std::ios_base::out | std::ios_base::binary);
   std::ofstream molecular_absorption(
-      "output/libradtran/molecular_absorption.txt");
+      "output/libradtran/molecular_absorption.txt", std::ios_base::out | std::ios_base::binary);
   for (int i = 0; i < kNumLayers + 1; ++i) {
     molecular_scattering << AltitudeKm(i) << " ";
     molecular_absorption << AltitudeKm(i) << " ";
   }
-  molecular_scattering << std::endl;
-  molecular_absorption << std::endl;
+  molecular_scattering << lf_endl;
+  molecular_absorption << lf_endl;
   for (unsigned int i = 0; i < rayleigh.size(); ++i) {
     molecular_scattering << rayleigh.GetSample(i).to(nm) << " ";
     molecular_absorption << rayleigh.GetSample(i).to(nm) << " ";
@@ -187,8 +189,8 @@ LibRadtran::LibRadtran(const std::string& libradtran_uvspec,
       molecular_scattering << dtau() << " ";
       molecular_absorption << "0.0 ";
     }
-    molecular_scattering << std::endl;
-    molecular_absorption << std::endl;
+    molecular_scattering << lf_endl;
+    molecular_absorption << lf_endl;
   }
   molecular_scattering.close();
   molecular_absorption.close();
@@ -203,12 +205,12 @@ LibRadtran::LibRadtran(const std::string& libradtran_uvspec,
       MieScattering(mie_angstrom_alpha, mie_angstrom_beta);
   ScatteringSpectrum mie_extinction =
       MieExtinction(mie_angstrom_alpha, mie_angstrom_beta);
-  std::ofstream aerosol_properties("output/libradtran/aerosol_properties.txt");
+  std::ofstream aerosol_properties("output/libradtran/aerosol_properties.txt", std::ios_base::out | std::ios_base::binary);
   for (int i = 0; i < kNumLayers + 1; ++i) {
     std::stringstream os;
     os << "output/libradtran/aerosol_properties_" << i << ".txt";
-    aerosol_properties << AltitudeKm(i) << " " << os.str() << std::endl;
-    std::ofstream layer_properties(os.str());
+    aerosol_properties << AltitudeKm(i) << " " << os.str() << lf_endl;
+    std::ofstream layer_properties(os.str(), std::ios_base::out | std::ios_base::binary);
     for (unsigned int j = 0; j < mie_scattering.size(); ++j) {
       ScatteringCoefficient extinction = i == 0 ? 0.0 / m :
           mie_extinction[j] * exp(-AltitudeKm(i) * km / MieScaleHeight);
@@ -218,30 +220,30 @@ LibRadtran::LibRadtran(const std::string& libradtran_uvspec,
       for (int k = 0; k < kNumMoments; ++k) {
         layer_properties << " " << moments[k];
       }
-      layer_properties << std::endl;
+      layer_properties << lf_endl;
     }
     layer_properties.close();
   }
   aerosol_properties.close();
 
   // Ground: albedo.
-  std::ofstream albedo_stream("output/libradtran/albedo.txt");
+  std::ofstream albedo_stream("output/libradtran/albedo.txt", std::ios_base::out | std::ios_base::binary);
   DimensionlessSpectrum albedo = GroundAlbedo();
   for (unsigned int i = 0; i < albedo.size(); ++i) {
     albedo_stream << albedo.GetSample(i).to(nm) << " "
-                  << (ground_albedo ? albedo[i]() : 0.0) << std::endl;
+                  << (ground_albedo ? albedo[i]() : 0.0) << lf_endl;
   }
   albedo_stream.close();
 
   // libRadtran input model file.
-  std::ofstream model("output/libradtran/model.txt");
+  std::ofstream model("output/libradtran/model.txt", std::ios_base::out | std::ios_base::binary);
   model << "#source irradiance\n";
   model << "source solar output/libradtran/solar_spectrum.txt per_nm\n";
   model << "wavelength " << solar.GetSample(0).to(nm) << " "
-      << solar.GetSample(solar.size() - 1).to(nm) << std::endl;
+      << solar.GetSample(solar.size() - 1).to(nm) << lf_endl;
   model << "\n#atmosphere profile\n";
   model << "atmosphere_file output/libradtran/atmosphere.txt\n";
-  model << "earth_radius " << EarthRadius.to(km) << std::endl;
+  model << "earth_radius " << EarthRadius.to(km) << lf_endl;
   model << "\n#molecular properties\n";
   model << "mol_tau_file sca output/libradtran/molecular_scattering.txt\n";
   model << "mol_tau_file abs output/libradtran/molecular_absorption.txt\n";
@@ -254,7 +256,7 @@ LibRadtran::LibRadtran(const std::string& libradtran_uvspec,
   model << "aerosol_file explicit output/libradtran/aerosol_properties.txt\n";
   model << "disort_intcor moments\n";
   model << "\n#ground properties\n";
-  model << "albedo_file " << "output/libradtran/albedo.txt" << std::endl;
+  model << "albedo_file " << "output/libradtran/albedo.txt" << lf_endl;
   model << "\n#solver and output options\n";
   model << "pseudospherical\n";
   model << "output_process per_nm\n";
@@ -306,21 +308,21 @@ void LibRadtran::MaybeComputeBinaryFunctionCache(Angle sun_zenith) const {
   }
   current_sun_zenith_ = sun_zenith;
 
-  std::ofstream input("output/libradtran/input.txt");
-  input << "include output/libradtran/model.txt" << std::endl;
-  input << "sza " << sun_zenith.to(deg) << std::endl;
-  input << "phi0 0.0" << std::endl;
+  std::ofstream input("output/libradtran/input.txt", std::ios_base::out | std::ios_base::binary);
+  input << "include output/libradtran/model.txt" << lf_endl;
+  input << "sza " << sun_zenith.to(deg) << lf_endl;
+  input << "phi0 0.0" << lf_endl;
   input << "umu";
   for (int i = 0; i < kNumTheta; ++i) {
     Angle view_zenith = (i + 0.5) * kDeltaPhi;
     input << " " << -cos(view_zenith)();
   }
-  input << std::endl << "phi";
+  input << lf_endl << "phi";
   for (int i = 0; i < kNumPhi / 2; ++i) {
     Angle view_azimuth = (i + 0.5) * kDeltaPhi;
     input << " " << view_azimuth.to(deg);
   }
-  input << std::endl;
+  input << lf_endl;
   input.close();
 
   const auto& spectrum = binary_function_cache_.Get(0, 0);
@@ -356,19 +358,19 @@ void LibRadtran::MaybeComputeHemisphericalFunctionCache(Angle sun_zenith,
   GridToHemisphericalMap grid_to_hemispherical =
       GetGridToHemisphericalMap(view_zeniths, view_azimuths);
 
-  std::ofstream input("output/libradtran/input.txt");
-  input << "include output/libradtran/model.txt" << std::endl;
-  input << "sza " << sun_zenith.to(deg) << std::endl;
-  input << "phi0 " << sun_azimuth.to(deg) << std::endl;
+  std::ofstream input("output/libradtran/input.txt", std::ios_base::out | std::ios_base::binary);
+  input << "include output/libradtran/model.txt" << lf_endl;
+  input << "sza " << sun_zenith.to(deg) << lf_endl;
+  input << "phi0 " << sun_azimuth.to(deg) << lf_endl;
   input << "umu";
   for (Angle view_zenith : view_zeniths) {
     input << " " << -cos(view_zenith)();
   }
-  input << std::endl << "phi";
+  input << lf_endl << "phi";
   for (Angle view_azimuth : view_azimuths) {
     input << " " << view_azimuth.to(deg);
   }
-  input << std::endl;
+  input << lf_endl;
   input.close();
 
   RadianceSpectrum spectrum;
