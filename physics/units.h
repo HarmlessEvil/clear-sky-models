@@ -63,7 +63,7 @@ typedef dimensional::Scalar<-2, 0, -1, 0, 1> Luminance;
 // A function from wavelength to values with some physical dimensions.
 template<int U1, int U2, int U3, int U4, int U5>
 using WavelengthFunction = dimensional::ScalarFunction<
-    0, 1, 0, 0, 0, U1, U2, U3, U4, U5, 40, 360, 830>;
+    0, 1, 0, 0, 0, U1, U2, U3, U4, U5, 40, 360, 1440>;
 
 // A function from wavelength to dimensionless values.
 typedef WavelengthFunction<0, 0, 0, 0, 0> DimensionlessSpectrum;

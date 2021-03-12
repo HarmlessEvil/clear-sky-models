@@ -39,11 +39,7 @@ IrradianceSpectrum NewSolarSpectrum() {
   // summed and averaged in each bin (e.g. the value for 360nm is the average of
   // the ASTM G-173 values for all wavelengths between 360 and 371.75nm).
   static const float kSpectralIrradiance[40] = {
-    1.13419, 1.09801, 1.03541, 1.45086, 1.72453, 1.654, 1.70536, 1.97393,
-    2.03543, 2.00643, 1.95531, 1.95426, 1.92438, 1.82092, 1.88517, 1.85545,
-    1.85083, 1.82758, 1.84475, 1.78771, 1.76683, 1.70858, 1.68278, 1.63849,
-    1.59608, 1.52211, 1.52468, 1.47836, 1.4485, 1.40522, 1.35526, 1.32788,
-    1.28834, 1.26938, 1.23241, 1.20345, 1.17087, 1.1344, 1.11012, 1.07147
+    1.0937672727272727, 1.3510225, 1.682411111111111, 2.000903703703704, 1.9771037037037038, 1.8848370370370366, 1.869737037037037, 1.8412222222222223, 1.7931777777777782, 1.7039407407407408, 1.5919148148148152, 1.5248962962962964, 1.4336592592592594, 1.3397629629629628, 1.2696481481481479, 1.1961666666666668, 1.1214407407407407, 1.0539407407407408, 0.9732851851851854, 0.9369370370370369, 0.8889, 0.8425185185185186, 0.7880296296296294, 0.7497370370370371, 0.7033333333333333, 0.6616592592592592, 0.6205888888888891, 0.5878074074074073, 0.5636148148148148, 0.5387444444444444, 0.5134851851851852, 0.4888333333333334, 0.4658444444444445, 0.4451555555555555, 0.4186666666666665, 0.3965777777777778, 0.3765592592592592, 0.3603592592592592, 0.3444444444444444, 0.32934074074074077
   };
   IrradianceSpectrum result;
   for (unsigned int i = 0; i < result.size(); ++i) {
@@ -73,7 +69,7 @@ ScatteringSpectrum NewRayleighScattering() {
     constexpr double T = T_0 + 15.0;
     penndorf_samples.push_back(kPenndorf[i] * (T_0 / T) / m);
   }
-  return ScatteringSpectrum(360.0 * nm, 830.0 * nm, penndorf_samples);
+  return ScatteringSpectrum(360.0 * nm, 1440.0 * nm, penndorf_samples);
 }
 
 ScatteringSpectrum NewMieExtinction(double angstrom_alpha,
@@ -108,7 +104,7 @@ DimensionlessSpectrum NewGroundAlbedo() {
   for (int i = 0; i < 45; ++i) {
     grass_albedo_samples.push_back(kGrassAlbedo[i]);
   }
-  return DimensionlessSpectrum(360.0 * nm, 800.0 * nm, grass_albedo_samples);
+  return DimensionlessSpectrum(360.0 * nm, 1440.0 * nm, grass_albedo_samples);
 }
 
 const IrradianceSpectrum solar_spectrum = NewSolarSpectrum();

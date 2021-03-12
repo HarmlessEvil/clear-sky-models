@@ -63,7 +63,7 @@ std::string ToString(int i) {
   return out.str();
 }
 
-constexpr int kNumMeasurements = 17;
+constexpr int kNumMeasurements = 14;
 constexpr int kNumModels = 10;
 constexpr int kNumViewSamples = 5;
 
@@ -125,7 +125,7 @@ const double kViewAzimuthSamples[kNumViewSamples] = {
 };
 
 const int kIndices[] = {
-  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
 };
 
 void SaveLibRadtranRmseTable(const std::string& libradtran_uvspec,
@@ -356,15 +356,19 @@ void SaveComparisons(const Comparisons& comparisons,
           }
         }
       } else {
-        for (int j = 0; j < kNumViewSamples; ++j) {
+        /*for (int j = 0; j < kNumViewSamples; ++j) {
           Angle view_zenith = kViewZenithSamples[j] * deg;
           Angle view_azimuth = kViewAzimuthSamples[j] * deg;
           comparisons.PlotRadiance(name[i], sun_zenith[i], sun_azimuth[i],
               view_zenith, view_azimuth);
-        }
+        }*/
       }
     }
+
     std::cout << "Computing luminance and image..." << std::endl;
+	if (name[i] == "12h45") {
+		int x = 1;
+	}
     comparisons.RenderLuminanceAndImage(name[i], sun_zenith[i], sun_azimuth[i]);
     std::cout << "Computing luminance profile..." << std::endl;
     comparisons.PlotLuminanceProfile(name[i], sun_zenith[i], sun_azimuth[i]);
@@ -940,60 +944,60 @@ int main(int argc, char** argv) {
   // over the same range for all models. Thus we limit the radiance and
   // irradiance comparisons to the 360-720nm range.
   const Wavelength min_wavelength = 360.0 * nm;
-  const Wavelength max_wavelength = 720.0 * nm;
+  const Wavelength max_wavelength = 1440.0 * nm;
 
   SaveLibRadtranRmseTable(libradtran_uvspec, measured, sun_zenith, sun_azimuth,
       min_wavelength, max_wavelength);
   SaveZenithLuminanceRmseTable(measured, sun_zenith, min_wavelength,
       max_wavelength);
-  SavePreethamRmseTable(measured, sun_zenith, sun_azimuth, min_wavelength,
-      max_wavelength);
-  SaveHosekRmseTable(measured, sun_zenith, sun_azimuth, min_wavelength,
-      max_wavelength);
+//  SavePreethamRmseTable(measured, sun_zenith, sun_azimuth, min_wavelength,
+//      max_wavelength);
+//  SaveHosekRmseTable(measured, sun_zenith, sun_azimuth, min_wavelength,
+//      max_wavelength);
 
-  std::cout << std::endl << "Nishita93 model..." << std::endl;
-  SaveComparisons(Comparisons("nishita93", Nishita93(), measured,
-      min_wavelength, max_wavelength), name, sun_zenith, sun_azimuth,
-      measurement_location, measurement_time, true, false);
+//  std::cout << std::endl << "Nishita93 model..." << std::endl;
+//  SaveComparisons(Comparisons("nishita93", Nishita93(), measured,
+//      min_wavelength, max_wavelength), name, sun_zenith, sun_azimuth,
+//      measurement_location, measurement_time, true, false);
 
-  std::cout << std::endl << "Nishita96 model..." << std::endl;
-  SaveComparisons(Comparisons("nishita96", Nishita96(Nishita96::ALL_ORDERS),
-      measured, min_wavelength, max_wavelength), name, sun_zenith, sun_azimuth,
-      measurement_location, measurement_time, true, false);
+//  std::cout << std::endl << "Nishita96 model..." << std::endl;
+//  SaveComparisons(Comparisons("nishita96", Nishita96(Nishita96::ALL_ORDERS),
+//      measured, min_wavelength, max_wavelength), name, sun_zenith, sun_azimuth,
+//      measurement_location, measurement_time, true, false);
 
-  std::cout << std::endl << "Preetham model..." << std::endl;
-  SaveComparisons(Comparisons("preetham", Preetham(Turbidity), measured,
-      min_wavelength, max_wavelength), name, sun_zenith, sun_azimuth,
-      measurement_location, measurement_time, true, false);
+//  std::cout << std::endl << "Preetham model..." << std::endl;
+//  SaveComparisons(Comparisons("preetham", Preetham(Turbidity), measured,
+//      min_wavelength, max_wavelength), name, sun_zenith, sun_azimuth,
+//      measurement_location, measurement_time, true, false);
 
-  std::cout << std::endl << "O'Neal model..." << std::endl;
-  SaveComparisons(Comparisons("oneal", ONeal(), measured, min_wavelength,
-      max_wavelength), name, sun_zenith, sun_azimuth, measurement_location,
-      measurement_time, true, false);
+//  std::cout << std::endl << "O'Neal model..." << std::endl;
+//  SaveComparisons(Comparisons("oneal", ONeal(), measured, min_wavelength,
+//      max_wavelength), name, sun_zenith, sun_azimuth, measurement_location,
+//      measurement_time, true, false);
 
-  std::cout << std::endl << "Haber model..." << std::endl;
-  SaveComparisons(Comparisons("haber", Haber(Haber::ALL_ORDERS), measured,
-      min_wavelength, max_wavelength), name, sun_zenith, sun_azimuth,
-      measurement_location, measurement_time, true, false);
+//  std::cout << std::endl << "Haber model..." << std::endl;
+//  SaveComparisons(Comparisons("haber", Haber(Haber::ALL_ORDERS), measured,
+//      min_wavelength, max_wavelength), name, sun_zenith, sun_azimuth,
+//      measurement_location, measurement_time, true, false);
 
   std::cout << std::endl << "Bruneton model..." << std::endl;
   SaveComparisons(Comparisons("bruneton", Bruneton(Bruneton::ALL_ORDERS, 3),
       measured, min_wavelength, max_wavelength), name, sun_zenith, sun_azimuth,
       measurement_location, measurement_time, true, false);
 
-  std::cout << std::endl << "Elek model..." << std::endl;
-  SaveComparisons(Comparisons("elek", Bruneton(Bruneton::ALL_ORDERS, 15),
-      measured, min_wavelength, max_wavelength), name, sun_zenith, sun_azimuth,
-      measurement_location, measurement_time, true, false);
-  SaveSkyImages(
-      Comparisons("elek_whitebalance", Bruneton(Bruneton::ALL_ORDERS, 15),
-      measured, min_wavelength, max_wavelength), measurement_location,
-      measurement_time, true /* white_balance */);
+//  std::cout << std::endl << "Elek model..." << std::endl;
+//  SaveComparisons(Comparisons("elek", Bruneton(Bruneton::ALL_ORDERS, 15),
+//      measured, min_wavelength, max_wavelength), name, sun_zenith, sun_azimuth,
+//      measurement_location, measurement_time, true, false);
+//  SaveSkyImages(
+//      Comparisons("elek_whitebalance", Bruneton(Bruneton::ALL_ORDERS, 15),
+//      measured, min_wavelength, max_wavelength), measurement_location,
+//      measurement_time, true /* white_balance */);
 
-  std::cout << std::endl << "Hosek model..." << std::endl;
-  SaveComparisons(Comparisons("hosek", Hosek(Turbidity), measured,
-      min_wavelength, max_wavelength), name, sun_zenith, sun_azimuth,
-      measurement_location, measurement_time, true, false);
+//  std::cout << std::endl << "Hosek model..." << std::endl;
+//  SaveComparisons(Comparisons("hosek", Hosek(Turbidity), measured,
+//      min_wavelength, max_wavelength), name, sun_zenith, sun_azimuth,
+//      measurement_location, measurement_time, true, false);
 
   std::cout << std::endl << "libRadtran model..." << std::endl;
   SaveRadiances(Comparisons("libradtran",
@@ -1015,24 +1019,24 @@ int main(int argc, char** argv) {
       min_wavelength, max_wavelength), name, sun_zenith, sun_azimuth,
       measurement_location, measurement_time, true, true);
 
-  std::cout << std::endl << "Single scattering comparisons..." << std::endl;
-  SaveRadiances(Comparisons("nishita96_ss",
-      Nishita96(Nishita96::SINGLE_SCATTERING_ONLY),
-      measured, min_wavelength, max_wavelength), name, sun_zenith, sun_azimuth);
-  SaveRadiances(Comparisons("haber_ss",
-      Haber(Haber::SINGLE_SCATTERING_ONLY),
-      measured, min_wavelength, max_wavelength), name, sun_zenith, sun_azimuth);
+//  std::cout << std::endl << "Single scattering comparisons..." << std::endl;
+//  SaveRadiances(Comparisons("nishita96_ss",
+//      Nishita96(Nishita96::SINGLE_SCATTERING_ONLY),
+//      measured, min_wavelength, max_wavelength), name, sun_zenith, sun_azimuth);
+//  SaveRadiances(Comparisons("haber_ss",
+//      Haber(Haber::SINGLE_SCATTERING_ONLY),
+//      measured, min_wavelength, max_wavelength), name, sun_zenith, sun_azimuth);
   SaveRadiances(Comparisons("bruneton_ss",
       Bruneton(Bruneton::SINGLE_SCATTERING_ONLY, 3),
       measured, min_wavelength, max_wavelength), name, sun_zenith, sun_azimuth);
 
   std::cout << std::endl << "Double scattering comparisons..." << std::endl;
-  SaveRadiances(Comparisons("nishita96_ds",
-      Nishita96(Nishita96::DOUBLE_SCATTERING_ONLY),
-      measured, min_wavelength, max_wavelength), name, sun_zenith, sun_azimuth);
-  SaveRadiances(Comparisons("haber_ds",
-      Haber(Haber::DOUBLE_SCATTERING_ONLY),
-      measured, min_wavelength, max_wavelength), name, sun_zenith, sun_azimuth);
+//  SaveRadiances(Comparisons("nishita96_ds",
+//      Nishita96(Nishita96::DOUBLE_SCATTERING_ONLY),
+//      measured, min_wavelength, max_wavelength), name, sun_zenith, sun_azimuth);
+//  SaveRadiances(Comparisons("haber_ds",
+//      Haber(Haber::DOUBLE_SCATTERING_ONLY),
+//      measured, min_wavelength, max_wavelength), name, sun_zenith, sun_azimuth);
   SaveRadiances(Comparisons("bruneton_ds",
       Bruneton(Bruneton::DOUBLE_SCATTERING_ONLY, 3),
       measured, min_wavelength, max_wavelength), name, sun_zenith, sun_azimuth);
