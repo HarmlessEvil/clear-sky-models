@@ -366,9 +366,6 @@ void SaveComparisons(const Comparisons& comparisons,
     }
 
     std::cout << "Computing luminance and image..." << std::endl;
-	if (name[i] == "12h45") {
-		int x = 1;
-	}
     comparisons.RenderLuminanceAndImage(name[i], sun_zenith[i], sun_azimuth[i]);
     std::cout << "Computing luminance profile..." << std::endl;
     comparisons.PlotLuminanceProfile(name[i], sun_zenith[i], sun_azimuth[i]);
